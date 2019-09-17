@@ -498,7 +498,6 @@ public:
     virtual BOOL CanUnload() = 0;
     void Init(BaseDomain *pDomain, BYTE *pExecutableHeapMemory = NULL);
     void Terminate();
-    virtual void ReleaseManagedAssemblyLoadContext() {}
 
     SIZE_T EstimateSize();
 
@@ -644,9 +643,6 @@ protected:
 public:    
     virtual LoaderAllocatorID* Id();
     AssemblyLoaderAllocator() : m_Id(LAT_Assembly), m_pShuffleThunkCache(NULL)
-#if !defined(DACCESS_COMPILE) && !defined(CROSSGEN_COMPILE)
-        , m_binderToRelease(NULL)
-#endif
     { LIMITED_METHOD_CONTRACT; }
     void Init(AppDomain *pAppDomain);
     virtual BOOL CanUnload();
@@ -667,13 +663,7 @@ public:
 #if !defined(DACCESS_COMPILE) && !defined(CROSSGEN_COMPILE)
     virtual void RegisterHandleForCleanup(OBJECTHANDLE objHandle);
     virtual void CleanupHandles();
-    CLRPrivBinderAssemblyLoadContext* GetBinder()
-    {
-        return m_binderToRelease;
-    }
     virtual ~AssemblyLoaderAllocator();
-    void RegisterBinder(CLRPrivBinderAssemblyLoadContext* binderToRelease);
-    virtual void ReleaseManagedAssemblyLoadContext();
 #endif // !defined(DACCESS_COMPILE) && !defined(CROSSGEN_COMPILE)
 
 private:
@@ -689,9 +679,6 @@ private:
     };
     
     SList<HandleCleanupListItem> m_handleCleanupList;
-#if !defined(DACCESS_COMPILE) && !defined(CROSSGEN_COMPILE)
-    CLRPrivBinderAssemblyLoadContext* m_binderToRelease;
-#endif
 };
 
 typedef VPTR(AssemblyLoaderAllocator) PTR_AssemblyLoaderAllocator;

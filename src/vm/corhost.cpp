@@ -704,10 +704,6 @@ HRESULT CorHost2::_CreateAppDomain(
     }
 
     LPCWSTR pwzNativeDllSearchDirectories = NULL;
-    LPCWSTR pwzTrustedPlatformAssemblies = NULL;
-    LPCWSTR pwzPlatformResourceRoots = NULL;
-    LPCWSTR pwzAppPaths = NULL;
-    LPCWSTR pwzAppNiPaths = NULL;
 #ifdef FEATURE_COMINTEROP
     LPCWSTR pwzAppLocalWinMD = NULL;
 #endif
@@ -717,26 +713,6 @@ HRESULT CorHost2::_CreateAppDomain(
         if (wcscmp(pPropertyNames[i], W("NATIVE_DLL_SEARCH_DIRECTORIES")) == 0)
         {
             pwzNativeDllSearchDirectories = pPropertyValues[i];
-        }
-        else
-        if (wcscmp(pPropertyNames[i], W("TRUSTED_PLATFORM_ASSEMBLIES")) == 0)
-        {
-            pwzTrustedPlatformAssemblies = pPropertyValues[i];
-        }
-        else
-        if (wcscmp(pPropertyNames[i], W("PLATFORM_RESOURCE_ROOTS")) == 0)
-        {
-            pwzPlatformResourceRoots = pPropertyValues[i];
-        }
-        else
-        if (wcscmp(pPropertyNames[i], W("APP_PATHS")) == 0)
-        {
-            pwzAppPaths = pPropertyValues[i];
-        }
-        else
-        if (wcscmp(pPropertyNames[i], W("APP_NI_PATHS")) == 0)
-        {
-            pwzAppNiPaths = pPropertyValues[i];
         }
         else
         if (wcscmp(pPropertyNames[i], W("DEFAULT_STACK_SIZE")) == 0)
@@ -760,21 +736,6 @@ HRESULT CorHost2::_CreateAppDomain(
     }
 
     pDomain->SetNativeDllSearchDirectories(pwzNativeDllSearchDirectories);
-
-    {
-        SString sTrustedPlatformAssemblies(pwzTrustedPlatformAssemblies);
-        SString sPlatformResourceRoots(pwzPlatformResourceRoots);
-        SString sAppPaths(pwzAppPaths);
-        SString sAppNiPaths(pwzAppNiPaths);
-
-        CLRPrivBinderCoreCLR *pBinder = pDomain->GetTPABinderContext();
-        _ASSERTE(pBinder != NULL);
-        IfFailThrow(pBinder->SetupBindingPaths(
-            sTrustedPlatformAssemblies,
-            sPlatformResourceRoots,
-            sAppPaths,
-            sAppNiPaths));
-    }
 
 #ifdef FEATURE_COMINTEROP
     if (WinRTSupported())

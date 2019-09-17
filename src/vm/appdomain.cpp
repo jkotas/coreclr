@@ -650,9 +650,6 @@ BaseDomain::BaseDomain()
 
     m_fDisableInterfaceCache = FALSE;
 
-    m_pFusionContext = NULL;
-    m_pTPABinderContext = NULL;
-
     // Make sure the container is set to NULL so that it gets loaded when it is used.
     m_pLargeHeapHandleTable = NULL;
 
@@ -793,26 +790,6 @@ void BaseDomain::InitVSD()
 }
 
 #ifndef CROSSGEN_COMPILE
-
-void BaseDomain::ClearFusionContext()
-{
-    CONTRACTL
-    {
-        NOTHROW;
-        GC_TRIGGERS;
-        MODE_PREEMPTIVE;
-    }
-    CONTRACTL_END;
-
-    if(m_pFusionContext) {
-        m_pFusionContext->Release();
-        m_pFusionContext = NULL;
-    }
-    if (m_pTPABinderContext) {
-        m_pTPABinderContext->Release();
-        m_pTPABinderContext = NULL;
-    }
-}
 
 void AppDomain::ShutdownFreeLoaderAllocators()
 {
@@ -1689,27 +1666,6 @@ void SystemDomain::DetachBegin()
 
     if(m_pSystemDomain)
         m_pSystemDomain->Stop();
-}
-
-void SystemDomain::DetachEnd()
-{
-    CONTRACTL
-    {
-        NOTHROW;
-        GC_TRIGGERS;
-        MODE_ANY;
-    }
-    CONTRACTL_END;
-    // Shut down the domain and its children (but don't deallocate anything just
-    // yet).
-    if(m_pSystemDomain)
-    {
-        GCX_PREEMP();
-        m_pSystemDomain->ClearFusionContext();
-        AppDomain* pAppDomain = GetAppDomain();
-        if (pAppDomain)
-            pAppDomain->ClearFusionContext();
-    }
 }
 
 void SystemDomain::Stop()
@@ -5522,39 +5478,6 @@ AppDomain::RaiseUnhandledExceptionEvent(OBJECTREF *pThrowable, BOOL isTerminatin
 }
 
 #endif // CROSSGEN_COMPILE
-
-IUnknown *AppDomain::CreateFusionContext()
-{
-    CONTRACT(IUnknown *)
-    {
-        GC_TRIGGERS;
-        THROWS;
-        MODE_ANY;
-        POSTCONDITION(CheckPointer(RETVAL));
-        INJECT_FAULT(COMPlusThrowOM(););
-    }
-    CONTRACT_END;
-
-    if (!m_pFusionContext)
-    {
-        ETWOnStartup (FusionAppCtx_V1, FusionAppCtxEnd_V1);
-        CLRPrivBinderCoreCLR *pTPABinder = NULL;
-
-        GCX_PREEMP();
-
-        // Initialize the assembly binder for the default context loads for CoreCLR.
-        IfFailThrow(CCoreCLRBinderHelper::DefaultBinderSetupContext(DefaultADID, &pTPABinder));
-        m_pFusionContext = reinterpret_cast<IUnknown *>(pTPABinder);
-        
-        // By default, initial binding context setup for CoreCLR is also the TPABinding context
-        (m_pTPABinderContext = pTPABinder)->AddRef();
-
-    }
-
-    RETURN m_pFusionContext;
-}
-
-
 
 //---------------------------------------------------------------------------------------
 //

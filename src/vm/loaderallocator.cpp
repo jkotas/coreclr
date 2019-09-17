@@ -591,8 +591,6 @@ void LoaderAllocator::GCLoaderAllocators(LoaderAllocator* pOriginalLoaderAllocat
         // (Also debugging NULL AVs if someone uses it accidentally is so much easier)
         pDomainLoaderAllocatorDestroyIterator->m_pFirstDomainAssemblyFromSameALCToDelete = NULL;
 
-        pDomainLoaderAllocatorDestroyIterator->ReleaseManagedAssemblyLoadContext();
-
         // The following code was previously happening on delete ~DomainAssembly->Terminate
         // We are moving this part here in order to make sure that we can unload a LoaderAllocator
         // that didn't have a DomainAssembly
@@ -1657,22 +1655,8 @@ void AssemblyLoaderAllocator::SetCollectible()
 
 AssemblyLoaderAllocator::~AssemblyLoaderAllocator()
 {
-    if (m_binderToRelease != NULL)
-    {
-        VERIFY(m_binderToRelease->Release() == 0);
-        m_binderToRelease = NULL;
-    }
-
     delete m_pShuffleThunkCache;
     m_pShuffleThunkCache = NULL;
-}
-
-void AssemblyLoaderAllocator::RegisterBinder(CLRPrivBinderAssemblyLoadContext* binderToRelease)
-{
-    // When the binder is registered it will be released by the destructor
-    // of this instance
-    _ASSERTE(m_binderToRelease == NULL);
-    m_binderToRelease = binderToRelease;
 }
 
 STRINGREF *LoaderAllocator::GetStringObjRefPtrFromUnicodeString(EEStringData *pStringData)
@@ -1867,23 +1851,6 @@ void LoaderAllocator::CleanupFailedTypeInit()
 
         ListLockHolder pInitLock(pLock);
         pLock->Unlink(pItem->m_pListLockEntry);
-    }
-}
-
-void AssemblyLoaderAllocator::ReleaseManagedAssemblyLoadContext()
-{
-    CONTRACTL
-    {
-        THROWS;
-        GC_TRIGGERS;
-        MODE_ANY;
-    }
-    CONTRACTL_END;
-
-    if (m_binderToRelease != NULL)
-    {
-        // Release the managed ALC
-        m_binderToRelease->ReleaseLoadContext();
     }
 }
 

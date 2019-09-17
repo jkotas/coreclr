@@ -7,20 +7,8 @@ set(BINDER_COMMON_SOURCES
     variables.cpp
     utils.cpp
     assemblyname.cpp
-    propertymap.cpp
-    applicationcontext.cpp
-    assembly.cpp
-    failurecache.cpp
-    assemblybinder.cpp
     stringlexer.cpp
-    clrprivbindercoreclr.cpp
-    binderinterface.cpp
-    debuglog.cpp
-    bindinglog.cpp
-    cdebuglog.cpp
     textualidentityparser.cpp
-    assemblyidentitycache.cpp
-    coreclrbindercommon.cpp
     fusionassemblyname.cpp
 )
 
@@ -66,7 +54,6 @@ set(BINDER_COMMON_HEADERS
 
 set(BINDER_SOURCES
     ${BINDER_COMMON_SOURCES}
-    clrprivbinderassemblyloadcontext.cpp
 )
 
 set(BINDER_HEADERS

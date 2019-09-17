@@ -157,7 +157,8 @@ VOID  AssemblySpec::Bind(AppDomain      *pAppDomain,
             tmpString.ConvertToUnicode(sCultureName);
         }        
   
-        hr = CCoreCLRBinderHelper::BindToSystemSatellite(sSystemDirectory, sSimpleName, sCultureName, &pPrivAsm);
+        _ASSERTE(false);
+        // hr = CCoreCLRBinderHelper::BindToSystemSatellite(sSystemDirectory, sSimpleName, sCultureName, &pPrivAsm);
     }
     else if (m_wszCodeBase == NULL)
     {
@@ -172,12 +173,14 @@ VOID  AssemblySpec::Bind(AppDomain      *pAppDomain,
     }
     else
     {
-        hr = pTPABinder->Bind(assemblyDisplayName,
-                              m_wszCodeBase,
-                              GetParentAssembly() ? GetParentAssembly()->GetFile() : NULL,
-                              fNgenExplicitBind,
-                              fExplicitBindToNativeImage,
-                              &pPrivAsm);
+        // hr = pTPABinder->Bind(assemblyDisplayName,
+        //                      m_wszCodeBase,
+        //                      GetParentAssembly() ? GetParentAssembly()->GetFile() : NULL,
+        //                      fNgenExplicitBind,
+        //                      fExplicitBindToNativeImage,
+        //                      &pPrivAsm);
+
+        _ASSERTE(false);
     }
 
     pResult->SetHRBindResult(hr);
@@ -366,7 +369,9 @@ HRESULT BaseAssemblySpec::ParseName()
             }
         }
 
-        hr = CCoreCLRBinderHelper::GetAssemblyIdentity(m_pAssemblyName, pAppContext, pAssemblyIdentity);
+        hr = E_FAIL;
+        _ASSERTE(false); // !!!!
+        // hr = CCoreCLRBinderHelper::GetAssemblyIdentity(m_pAssemblyName, pAppContext, pAssemblyIdentity);
 
         if (FAILED(hr))
         {

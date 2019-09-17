@@ -2054,6 +2054,10 @@ PEAssembly *PEAssembly::DoOpenSystem(IUnknown * pAppCtx)
     CONTRACT_END;
 
     ETWOnStartup (FusionBinding_V1, FusionBindingEnd_V1);
+
+    _ASSERTE(false);
+
+#if 0
     CoreBindResult bindResult;
     ReleaseHolder<ICLRPrivAssembly> pPrivAsm;
     IfFailThrow(CCoreCLRBinderHelper::BindToSystem(&pPrivAsm, !IsCompilationProcess() || g_fAllowNativeImages));
@@ -2061,6 +2065,7 @@ PEAssembly *PEAssembly::DoOpenSystem(IUnknown * pAppCtx)
     {
         bindResult.Init(pPrivAsm);
     }
+#endif
 
     RETURN new PEAssembly(&bindResult, NULL, NULL, TRUE, FALSE);
 }

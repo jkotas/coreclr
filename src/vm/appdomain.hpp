@@ -1141,11 +1141,6 @@ public:
 
 #endif // DACCESS_COMPILE && !CROSSGEN_COMPILE
 
-    IUnknown *GetFusionContext() {LIMITED_METHOD_CONTRACT;  return m_pFusionContext; }
-    
-    CLRPrivBinderCoreCLR *GetTPABinderContext() {LIMITED_METHOD_CONTRACT;  return m_pTPABinderContext; }
-
-
     CrstExplicitInit * GetLoaderAllocatorReferencesLock()
     {
         LIMITED_METHOD_CONTRACT;
@@ -1186,13 +1181,6 @@ protected:
     JitListLock      m_JITLock;
     ListLock         m_ILStubGenLock;
 
-    // Fusion context, used for adding assemblies to the is domain. It defines
-    // fusion properties for finding assemblyies such as SharedBinPath,
-    // PrivateBinPath, Application Directory, etc.
-    IUnknown *m_pFusionContext; // Current binding context for the domain
-
-    CLRPrivBinderCoreCLR *m_pTPABinderContext; // Reference to the binding context that holds TPA list details
-
     IGCHandleStore* m_handleStore;
 
     // The large heap handle table.
@@ -1213,10 +1201,6 @@ protected:
     static CrstStatic   m_SpecialStaticsCrst;
 
 public:
-    // Only call this routine when you can guarantee there are no
-    // loads in progress.
-    void ClearFusionContext();
-
     //****************************************************************************************
     // Synchronization holders.
 
@@ -2921,13 +2905,6 @@ public:
     // that require the use of system classes (i.e., exceptions).
     // DetachBegin stops all domains, while DetachEnd deallocates domain resources.
     static void DetachBegin();
-
-    //****************************************************************************************
-    //
-    // To be run during shutdown. This must be done after all operations
-    // that require the use of system classes (i.e., exceptions).
-    // DetachBegin stops release resources held by systemdomain and the default domain.
-    static void DetachEnd();
 
     //****************************************************************************************
     //

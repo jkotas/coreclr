@@ -193,6 +193,10 @@ Assembly* AssemblyNative::LoadFromPEImage(ICLRPrivBinder* pBinderContext, PEImag
     HRESULT hr = S_OK;
     PTR_AppDomain pCurDomain = GetAppDomain();
     CLRPrivBinderCoreCLR *pTPABinder = pCurDomain->GetTPABinderContext();
+
+    _ASSERTE(false); // !!!
+
+#if 0
     if (!AreSameBinderInstance(pTPABinder, pBinderContext))
     {
         // We are working with custom Assembly Load Context so bind the assembly using it.
@@ -204,6 +208,7 @@ Assembly* AssemblyNative::LoadFromPEImage(ICLRPrivBinder* pBinderContext, PEImag
         // Bind the assembly using TPA binder
         hr = pTPABinder->BindUsingPEImage(pImage, fIsNativeImage, &pAssembly);
     }
+#endif
 
     if (hr != S_OK)
     {
@@ -1331,7 +1336,8 @@ void QCALLTYPE AssemblyNative::PrepareForAssemblyLoadContextRelease(INT_PTR ptrN
 
     {
         GCX_COOP();
-        reinterpret_cast<CLRPrivBinderAssemblyLoadContext *>(ptrNativeAssemblyLoadContext)->PrepareForLoadContextRelease(ptrManagedStrongAssemblyLoadContext);
+        _ASSERTE(false);
+        // reinterpret_cast<CLRPrivBinderAssemblyLoadContext *>(ptrNativeAssemblyLoadContext)->PrepareForLoadContextRelease(ptrManagedStrongAssemblyLoadContext);
     }
 
     END_QCALL;

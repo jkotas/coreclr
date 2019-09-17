@@ -749,10 +749,6 @@ void EEStartupHelper(COINITIEE fFlags)
         InitEventStore();
 #endif
 
-        // Fusion
-        // Initialize the general Assembly Binder infrastructure
-        IfFailGoLog(CCoreCLRBinderHelper::Init());
-
         if (g_pConfig != NULL)
         {
             IfFailGoLog(g_pConfig->sync());        
